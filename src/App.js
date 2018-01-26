@@ -13,15 +13,24 @@ class BooksApp extends React.Component {
 
   // Listagem de todos os livros da API
   componentDidMount() {
+      console.log('BOOKS DID MOUNT');
     BooksAPI.getAll().then((books) => {
-      this.setState({books})
+       console.log('BOOKS ALL');
+       this.setState({books})
     })
+  }
+
+  // Busca os livros na API
+  searchBook(query) {
+      BooksAPI.search(query).then((booksList) => {
+          this.setState({books: booksList})
+      }).catch((error) => {
+          this.setState({books: []})
+      })
   }
 
   // Atualiza o status dos livros
   updateBook(book, shelf) {
-    // Se o estado de leitura for diferente do atual, atualiza
-    if (book.shelf != shelf) {
       // Atualizando o estado de leitura do livro
       book.shelf = shelf
       BooksAPI.update(book, shelf).then(rbook => {
@@ -30,7 +39,6 @@ class BooksApp extends React.Component {
           books: state.books.filter((b) => (b.id !== book.id)).concat([book])
         }))
       })
-    }
   }
 
   render() {
@@ -43,12 +51,15 @@ class BooksApp extends React.Component {
               this.updateBook(book, shelf)
             }} />
         )} />
-        <Route path="/search" render ={() => (
+        <Route path="/search" render ={({ history }) => (
           <SearchBooks
             books={this.state.books} // Responsável por listar os livros
             onUpdateBook={(book, shelf) => { // Responsável por atualizar o livro
               this.updateBook(book, shelf)
-            }} />
+            }}
+            onSearchBook={(query) => {
+              this.searchBook(query)
+            }}  />
         )} />
       </div>
     )

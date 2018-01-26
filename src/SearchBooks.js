@@ -19,7 +19,10 @@ class SearchBooks extends Component {
 
     // Função que armazena o estado da busca conforme o usuário digita é passado por parâmetrp e atualiza
     updateQuery = (query) => {
-        this.setState({ query: query.trim() })
+        if (this.props.onSearchBook && query !== "")
+            this.props.onSearchBook(query);
+
+        this.setState({ query: query })
     }
     // FIM BUSCA
 
@@ -61,6 +64,8 @@ class SearchBooks extends Component {
         // ORDENAÇÃO DA LISTAGEM DE RESULTADOS
         showBooks.sort(sortBy('title'))
 
+        //console.log(showBooks);
+
         return (
             <div className="search-books">
                 <div className="search-books-bar">
@@ -71,7 +76,12 @@ class SearchBooks extends Component {
                     </div>
                 </div>
                 <div className="search-books-results">
-                    {showBooks.length !== books.length && (
+                    {showBooks.length == 0 && (
+                        <div>
+                            <span>Nenhum livro encontrado para a sua busca! </span>
+                        </div>
+                    )}
+                    {showBooks.length !== books.length &&  (
                         <div>
                             <span>Mostrando {showBooks.length} de {books.length} livros </span>
                             <button onClick={this.clearQuery}> Mostrar todos</button>
@@ -82,7 +92,7 @@ class SearchBooks extends Component {
                             <li key={book.id} >
                                 <div className="book">
                                     <div className="book-top">
-                                        <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${book.imageLinks.thumbnail})` }} />
+                                        <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${(book.imageLinks.thumbnail !== '' ? book.imageLinks.thumbnail : ' ')})` }} />
                                         <div className="book-shelf-changer">
                                             <select onChange={(event) => this.updateBook(book, event.target.value)}>
                                                 <option value="none" disabled>Move to...</option>

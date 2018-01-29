@@ -2,6 +2,7 @@ import React from 'react'
 import { Route } from 'react-router-dom' // Importando componente que identifica qual componente chamar
 import ListBooks from './ListBooks'
 import SearchBooks from './SearchBooks'
+import BookList from './ListBooksInfo'
 import * as BooksAPI from './BooksAPI'
 import './App.css'
 

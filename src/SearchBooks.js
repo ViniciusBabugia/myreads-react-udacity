@@ -3,12 +3,15 @@ import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types' // Importando o componente de validação dos parâmetros
 import escapeRegExp from 'escape-string-regexp' // Importando o componente para escapar strings na busca
 import sortBy from 'sort-by' // Importando o componente para ordenar o resultado da busca
+import ListBooksInfo from './ListBooksInfo'
 
 class SearchBooks extends Component {
 
     // PROP-TYPES especifica que tipo de elemento o books tem que receber
     static propTypes = {
-        books: PropTypes.array.isRequired
+        books: PropTypes.array.isRequired,
+        onUpdateBook: PropTypes.func.isRequired,
+        onSearchBook: PropTypes.func.isRequired
     }
     // FIM PROP-TYPES
 
@@ -19,7 +22,7 @@ class SearchBooks extends Component {
 
     // Função que armazena o estado da busca conforme o usuário digita é passado por parâmetrp e atualiza
     updateQuery = (query) => {
-        if (this.props.onSearchBook && query !== "")
+        if (query !== "")
             this.props.onSearchBook(query);
 
         this.setState({ query: query })
@@ -35,10 +38,15 @@ class SearchBooks extends Component {
 
     // ATUALIZAÇÃO ESTANTE LIVRO
     updateBook = (book, shelf) => {
-        if (this.props.onUpdateBook)
-            this.props.onUpdateBook(book, shelf);
+        this.props.onUpdateBook(book, shelf);
     }
     // FIM ATUALIZAÇÃO ESTANTE LIVRO
+
+    // BOTÃO VOLTAR
+    handlerInit = () => {
+        window.location.href = '/'
+    }
+    // FIM BOTÃO VOLTAR
 
     render () {
 
@@ -64,51 +72,33 @@ class SearchBooks extends Component {
         // ORDENAÇÃO DA LISTAGEM DE RESULTADOS
         showBooks.sort(sortBy('title'))
 
-        //console.log(showBooks);
-
         return (
             <div className="search-books">
                 <div className="search-books-bar">
-                    <Link className='close-search' to='/'>Voltar</Link>
+                    <Link onClick={(event) => this.handlerInit()} className='close-search' to='/'>Voltar</Link>
                     <div className="search-books-input-wrapper">
                         <input type="text" placeholder="Pesquise pelo título ou autor"
                                value={query} onChange={(event) => this.updateQuery(event.target.value)} />
                     </div>
                 </div>
+                {showBooks.length == 0 && (
+                    <div>
+                        <span>Nenhum livro encontrado para a sua busca! </span>
+                    </div>
+                )}
+                {showBooks.length !== books.length &&  (
+                    <div>
+                        <span>Mostrando {showBooks.length} de {books.length} livros </span>
+                        <button onClick={this.clearQuery}> Mostrar todos</button>
+                    </div>
+                )}
                 <div className="search-books-results">
-                    {showBooks.length == 0 && (
-                        <div>
-                            <span>Nenhum livro encontrado para a sua busca! </span>
-                        </div>
-                    )}
-                    {showBooks.length !== books.length &&  (
-                        <div>
-                            <span>Mostrando {showBooks.length} de {books.length} livros </span>
-                            <button onClick={this.clearQuery}> Mostrar todos</button>
-                        </div>
-                    )}
-                    <ol className="books-grid">
-                        {showBooks.map((book) => (
-                            <li key={book.id} >
-                                <div className="book">
-                                    <div className="book-top">
-                                        <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${(book.imageLinks.thumbnail !== '' ? book.imageLinks.thumbnail : ' ')})` }} />
-                                        <div className="book-shelf-changer">
-                                            <select onChange={(event) => this.updateBook(book, event.target.value)}>
-                                                <option value="none" disabled>Move to...</option>
-                                                <option value="none">None</option>
-                                                <option value="currentlyReading">Currently Reading</option>
-                                                <option value="wantToRead">Want to Read</option>
-                                                <option value="read">Read</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div className="book-title">{book.title}</div>
-                                    <div className="book-authors">{book.authors}</div>
-                                </div>
-                            </li>
-                        ))}
-                    </ol>
+                    <ListBooksInfo
+                        books={showBooks}
+                        onUpdateBookList={(book, shelf) => {
+                          this.updateBook(book, shelf)
+                        }}
+                    />
                 </div>
             </div>
         )

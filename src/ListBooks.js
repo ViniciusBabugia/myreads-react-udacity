@@ -49,7 +49,7 @@ class ListBooks extends Component {
                     <div>
                         <div className="bookshelf">
                             {bookShelves.map(shelf => (
-                                <div>
+                                <div key={shelf.id}>
                                     <h2 className="bookshelf-title">{shelf.name}</h2>
                                     <ListBooksInfo
                                         books={books.filter(book => book.shelf === shelf.id)}

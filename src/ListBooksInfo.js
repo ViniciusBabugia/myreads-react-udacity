@@ -32,10 +32,10 @@ class ListBooksInfo extends Component {
                     <li key={book.id}>
                         <div className="book">
                             <div className="book-top">
-                                <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${book.imageLinks.thumbnail})` }} />
+                                <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${(book.imageLinks.thumbnail !== "" ? book.imageLinks.thumbnail : '')})` }} />
                                 <div className="book-shelf-changer">
                                     <select onChange={(event) => this.updateBookList(book, event.target.value)}>
-                                        <option value="">Selecione</option>
+                                        <option value="none">Selecione</option>
                                         <option value="currentlyReading">Currently Reading</option>
                                         <option value="wantToRead">Want to Read</option>
                                         <option value="read">Read</option>

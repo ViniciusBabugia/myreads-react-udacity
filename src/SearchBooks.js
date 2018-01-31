@@ -4,26 +4,35 @@ import PropTypes from 'prop-types' // Importando o componente de validação dos
 import escapeRegExp from 'escape-string-regexp' // Importando o componente para escapar strings na busca
 import sortBy from 'sort-by' // Importando o componente para ordenar o resultado da busca
 import ListBooksInfo from './ListBooksInfo'
+import * as BooksAPI from './BooksAPI'
 
 class SearchBooks extends Component {
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            query: '',
+            booksSearch: this.props.books
+        };
+    }
+
     // PROP-TYPES especifica que tipo de elemento o books tem que receber
     static propTypes = {
-        books: PropTypes.array.isRequired,
-        onUpdateBook: PropTypes.func.isRequired,
-        onSearchBook: PropTypes.func.isRequired
+        onUpdateBook: PropTypes.func.isRequired
     }
     // FIM PROP-TYPES
 
     // BUSCA
-    state = {
-        query: ''
-    }
+
 
     // Função que armazena o estado da busca conforme o usuário digita é passado por parâmetrp e atualiza
     updateQuery = (query) => {
         if (query !== "")
-            this.props.onSearchBook(query);
+            BooksAPI.search(query).then((booksList) => {
+                this.setState({booksSearch: booksList})
+            }).catch(error => {
+                this.setState({booksSearch: []})
+            })
 
         this.setState({ query: query })
     }
@@ -51,21 +60,18 @@ class SearchBooks extends Component {
     render () {
 
         // Após reenderizar, armazenamos os valores do objeto retornados da Api se passarem pela validação do PROP-TYPE
-        const {books} = this.props
+        const {books} = this.state.booksSearch
 
-        // BUSCA
-        let showBooks
+        let showBooks = this.state.booksSearch
 
         // Após reenderizar o estado do objeto armazenamos o novo valor da query por meio do this.state
-        const {query} = this.state;
+        const {query} = this.state.query;
 
         // Se foi digitado algo efetuamos a busca
         if (query) {
             const  match = new RegExp(escapeRegExp(query), 'i')
             showBooks = books.filter((book) => match.test([book.title,book.authors]))
         // Se não retorna todos os valores
-        } else {
-            showBooks = books
         }
         // FIM BUSCA
 
@@ -86,9 +92,9 @@ class SearchBooks extends Component {
                         <span>Nenhum livro encontrado para a sua busca! </span>
                     </div>
                 )}
-                {showBooks.length !== books.length &&  (
+                {showBooks.length !== this.props.length &&  (
                     <div>
-                        <span>Mostrando {showBooks.length} de {books.length} livros </span>
+                        <span>Mostrando {showBooks.length} de {this.props.length} livros </span>
                         <button onClick={this.clearQuery}> Mostrar todos</button>
                     </div>
                 )}

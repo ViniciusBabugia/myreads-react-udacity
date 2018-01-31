@@ -20,13 +20,6 @@ class BooksApp extends React.Component {
     })
   }
 
-  // Busca os livros na API
-  searchBook(query) {
-      BooksAPI.search(query).then((booksList) => {
-          this.setState({books: booksList})
-      })
-  }
-
   // Atualiza o status dos livros
   updateBook(book, shelf) {
       // Atualizando o estado de leitura do livro
@@ -54,9 +47,6 @@ class BooksApp extends React.Component {
             books={this.state.books} // Responsável por listar os livros
             onUpdateBook={(book, shelf) => { // Responsável por atualizar o livro
               this.updateBook(book, shelf)
-            }}
-            onSearchBook={(query) => {
-              this.searchBook(query)
             }}  />
         )} />
       </div>

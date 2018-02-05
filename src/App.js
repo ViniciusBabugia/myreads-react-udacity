@@ -44,7 +44,7 @@ class BooksApp extends React.Component {
         )} />
         <Route path="/search" render ={({ history }) => (
           <SearchBooks
-            books={this.state.books} // Responsável por listar os livros
+            booksSearch={this.state.books} // Responsável por listar os livros
             onUpdateBook={(book, shelf) => { // Responsável por atualizar o livro
               this.updateBook(book, shelf)
             }}  />
